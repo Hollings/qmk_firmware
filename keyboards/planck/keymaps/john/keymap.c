@@ -11,7 +11,7 @@
 #include "timer.h"
 
 // Backlight timeout feature
-#define BACKLIGHT_TIMEOUT 5  // in seconds
+#define BACKLIGHT_TIMEOUT 30  // in seconds
 static uint16_t idle_timer = 0;
 static uint8_t second_counter = 0;
 static uint8_t old_backlight_level = -1;
@@ -172,7 +172,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = {
   {_______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, M(0)},
-  {BL_INC, _______, _______, AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, QWERTY,  COLEMAK, DVORAK,  PLOVER,   M(1)},
+  {BL_INC, _______, _______, AU_ON,   AU_OFF,  _______, _______, QWERTY,  _______, _______,  _______,   M(1)},
   {BL_DEC, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______,  M(2)},
   {BL_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______}
 }

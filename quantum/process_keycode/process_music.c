@@ -92,7 +92,7 @@ bool process_music(uint16_t keycode, keyrecord_t *record) {
 
     if (music_activated) {
 
-      if (keycode == KC_LCTL && record->event.pressed) { // Start recording
+      if (false) { // Start recording
         music_all_notes_off();
         music_sequence_recording = true;
         music_sequence_recorded = false;
@@ -111,7 +111,7 @@ bool process_music(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
 
-      if (keycode == KC_LGUI && record->event.pressed && music_sequence_recorded) { // Start playing
+      if (false) { // Start playing
         music_all_notes_off();
         music_sequence_recording = false;
         music_sequence_playing = true;
@@ -120,13 +120,13 @@ bool process_music(uint16_t keycode, keyrecord_t *record) {
         return false;
       }
 
-      if (keycode == KC_UP) {
+      if (false) {
         if (record->event.pressed)
             music_sequence_interval-=10;
         return false;
       }
 
-      if (keycode == KC_DOWN) {
+      if (false) {
         if (record->event.pressed)
             music_sequence_interval+=10;
         return false;
@@ -154,8 +154,8 @@ bool process_music(uint16_t keycode, keyrecord_t *record) {
         music_noteoff(note);
       }
 
-      if (keycode < 0xFF) // ignores all normal keycodes, but lets RAISE, LOWER, etc through
-        return false;
+      // if (keycode < 0xFF) // ignores all normal keycodes, but lets RAISE, LOWER, etc through
+        // return false;
     }
 
     return true;
