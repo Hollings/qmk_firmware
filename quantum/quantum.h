@@ -131,6 +131,9 @@ void backlight_task(void);
 #ifdef BACKLIGHT_BREATHING
 void breathing_enable(void);
 void breathing_pulse(void);
+void fade_in(void);
+void fade_out(void);
+
 void breathing_disable(void);
 void breathing_self_disable(void);
 void breathing_toggle(void);

@@ -443,7 +443,7 @@ bool process_record_quantum(keyrecord_t *record) {
                                       |MOD_BIT(KC_LGUI)|MOD_BIT(KC_RGUI)));
 
       method(shifted ? KC_GRAVE : KC_ESCAPE);
-      send_keyboard_report(); 
+      send_keyboard_report();
     }
     default: {
       shift_interrupted[0] = true;
@@ -680,14 +680,14 @@ void backlight_set(uint8_t level)
       //   _SFR_IO8((backlight_pin >> 4) + 2) &= ~_BV(backlight_pin & 0xF);
       // #endif
     #endif
-  } 
+  }
   #ifndef NO_BACKLIGHT_CLOCK
     else if ( level == BACKLIGHT_LEVELS ) {
       // Turn on PWM control of backlight pin
       TCCR1A |= _BV(COM1x1);
       // Set the brightness
       OCR1x = 0xFFFF;
-    } 
+    }
     else {
       // Turn on PWM control of backlight pin
       TCCR1A |= _BV(COM1x1);
@@ -705,7 +705,7 @@ uint8_t backlight_tick = 0;
 
 void backlight_task(void) {
   #ifdef NO_BACKLIGHT_CLOCK
-  if ((0xFFFF >> ((BACKLIGHT_LEVELS - backlight_config.level) * ((BACKLIGHT_LEVELS + 1) / 2))) & (1 << backlight_tick)) { 
+  if ((0xFFFF >> ((BACKLIGHT_LEVELS - backlight_config.level) * ((BACKLIGHT_LEVELS + 1) / 2))) & (1 << backlight_tick)) {
     #if BACKLIGHT_ON_STATE == 0
       // PORTx &= ~n
       _SFR_IO8((backlight_pin >> 4) + 2) &= ~_BV(backlight_pin & 0xF);
@@ -728,9 +728,12 @@ void backlight_task(void) {
 
 #ifdef BACKLIGHT_BREATHING
 
-#define BREATHING_NO_HALT  0
-#define BREATHING_HALT_OFF 1
-#define BREATHING_HALT_ON  2
+#define BREATHING_NO_HALT   0
+#define BREATHING_HALT_OFF  1
+#define BREATHING_HALT_ON   2
+#define BREATHING_IN 3
+#define BREATHING_OUT 4
+
 
 static uint8_t breath_intensity;
 static uint8_t breath_speed;
@@ -768,6 +771,31 @@ void breathing_pulse(void)
     }
 
     breathing_halt = BREATHING_HALT_ON;
+
+    // Enable breathing interrupt
+    TIMSK1 |= _BV(OCIE1A);
+}
+
+void fade_out(void)
+{
+
+        // Set breathing_index to be at the midpoint + 1 (brightest point)
+        breathing_index = 0x21 << breath_speed;
+
+
+    breathing_halt = BREATHING_OUT;
+
+    // Enable breathing interrupt
+    TIMSK1 |= _BV(OCIE1A);
+}
+
+void fade_in(void)
+{
+
+        breathing_index = 0;
+
+
+    breathing_halt = BREATHING_IN;
 
     // Enable breathing interrupt
     TIMSK1 |= _BV(OCIE1A);
@@ -904,11 +932,12 @@ void breathing_defaults(void)
  * (0..63).each {|x| p ((sin(x/64.0*PI)**8)*255).to_i }
  */
 static const uint8_t breathing_table[64] PROGMEM = {
-  0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   2,   4,   6,  10,
- 15,  23,  32,  44,  58,  74,  93, 113, 135, 157, 179, 199, 218, 233, 245, 252,
-255, 252, 245, 233, 218, 199, 179, 157, 135, 113,  93,  74,  58,  44,  32,  23,
- 15,  10,   6,   4,   2,   1,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
+  0,   8,   16,   32,   40,   48,   56,   64,   72,   80,   88,   96,   104,   112,   120,  128,
+ 136,  144, 152, 160,  168,  176,  184, 192, 200, 208, 216, 224, 232, 240, 248, 255,
+255, 248, 240, 232, 224, 216, 208, 200, 192, 184,  176,  160,  152,  144,  136,  128,
+ 120,  112,   104,   96,  88,   80,   72,  64,   56,  48,  40,   32,   16,   8,   0,   0
 };
+// static const uint8_t breathing_table[256] PROGMEM = {0,0,0,0,1,1,1,2,2,3,4,5,5,6,7,9,10,11,12,14,15,17,18,20,21,23,25,27,29,31,33,35,37,40,42,44,47,49,52,54,57,59,62,65,67,70,73,76,79,82,85,88,90,93,97,100,103,106,109,112,115,118,121,124,127,131,134,137,140,143,146,149,152,155,158,162,165,167,170,173,176,179,182,185,188,190,193,196,198,201,203,206,208,211,213,215,218,220,222,224,226,228,230,232,234,235,237,238,240,241,243,244,245,246,248,249,250,250,251,252,253,253,254,254,254,255,255,255,255,255,255,255,254,254,254,253,253,252,251,250,250,249,48,246,245,244,243,241,240,238,237,235,234,232,230,228,226,224,222,220,218,215,213,211,208,206,203,201,198,196,193,190,188,185,182,179,176,173,170,167,165,162,158,155,152,149,146,143,140,137,134,131,128,124,121,118,115,112,109,106,103,100,97,93,90,88,85,82,79,76,73,70,67,65,62,59,57,54,52,49,47,44,42,40,37,35,33,31,29,27,25,23,21,20,18,17,15,14,12,11,10,9,7,6,5,5,4,3,2,2,1,1,1,0,0,0};
 
 ISR(TIMER1_COMPA_vect)
 {
@@ -917,7 +946,19 @@ ISR(TIMER1_COMPA_vect)
 
     uint8_t local_index = ( (uint8_t)( (breathing_index++) >> breath_speed ) ) & 0x3F;
 
-    if (((breathing_halt == BREATHING_HALT_ON) && (local_index == 0x20)) || ((breathing_halt == BREATHING_HALT_OFF) && (local_index == 0x3F)))
+    // Fade in
+    if ((breathing_halt == BREATHING_IN && local_index == 0x20)) {
+        // Disable breathing interrupt
+        TIMSK1 &= ~_BV(OCIE1A);
+    }
+
+    // Fade out
+    if ((breathing_halt == BREATHING_OUT && local_index == 0x3F)) {
+        // Disable breathing interrupt
+        TIMSK1 &= ~_BV(OCIE1A);
+    }
+
+    if (((breathing_halt == BREATHING_HALT_ON ) && (local_index == 0x20)) || ((breathing_halt == BREATHING_HALT_OFF) && (local_index == 0x3F)))
     {
         // Disable breathing interrupt
         TIMSK1 &= ~_BV(OCIE1A);
