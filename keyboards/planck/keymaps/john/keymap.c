@@ -230,6 +230,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // turn on backlight after it turned off
   if (record->event.pressed) {
+
+  	if (is_music_on() == true)
+  	{
+  		backlight_toggle();
+  	}
+  	
+
      #ifdef BACKLIGHT_ENABLE
          if (led_on == false || old_backlight_level == -1) {
              if (old_backlight_level == -1) old_backlight_level = get_backlight_level();
@@ -242,6 +249,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
      second_counter = 0;
   }
 
+  
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
