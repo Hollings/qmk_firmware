@@ -174,7 +174,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {_______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, M(0)},
   {BL_INC, _______, _______, AU_ON,   AU_OFF,  _______, _______, QWERTY,  _______, _______,  _______,   M(1)},
   {BL_DEC, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______,  M(2)},
-  {BL_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______}
+  {BL_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, M(3)}
 }
 
 
@@ -217,7 +217,12 @@ const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 
                 SEND_STRING("vim /etc/nginx/sites-available/");
                 return false;
-        }
+
+            // case 3:
+            //     cch = ;
+            //     SEND_STRING(cch);
+            //     return false;
+            }
     }
     return MACRO_NONE;
 }
@@ -303,6 +308,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
       return false;
       break;
+
     case PLOVER:
       if (record->event.pressed) {
         #ifdef AUDIO_ENABLE
