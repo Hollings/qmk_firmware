@@ -26,7 +26,7 @@ run:
 
     util/wsl_install.sh
 
-##How to 'make' the firmware for flashing:
+## How to 'make' the firmware for flashing:
 Using Bash on Ubuntu still, navigate to the qmk_firmware folder again.
 
 To make the default planck build, run:
@@ -36,7 +36,7 @@ To make the default planck build, run:
 
 This will make a .hex file in the root directory
 
-##How to flash to the planck
+## How to flash to the planck
 		
 Download and install Flip and JRE
 			http://www.atmel.com/tools/flip.aspx
