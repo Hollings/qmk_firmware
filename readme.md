@@ -1,3 +1,61 @@
+#How to install this firmware on a Planck keyboard using Windows 10
+##Enabling Windows Subsystem for Linux on windows 10 Creator update
+
+Make sure you have the 64 bit windows 10 anniversary update.
+
+Search the start menu for *"Use Developer Features"*, and enable developer mode. Wait for the updates to install if any. Reboot the computer if prompted.
+
+Search the start menu for "*Turn windows features on or off*", and enable "Windows Subsystem for Linux".
+
+Search the start menu for "*bash.exe*".  Type "*y*" to accept the terms. If prompted for username and password, use "*root*" and leave password blank
+
+Download and install git if you havent already: https://git-scm.com/download/win
+
+Open a command prompt in the directory you want to install QMK in, and type
+
+    git clone --recurse-submodules https://github.com/qmk/qmk_firmware
+
+Open "Bash on Ubuntu on windows" and navigate to the folder that was just created. Note that windows directories are in the /mnt/ directory. For example:
+			
+
+    cd /mnt/c/path/to/qmk_firmware
+
+run:
+		
+
+    util/wsl_install.sh
+
+##How to 'make' the firmware for flashing:
+Using Bash on Ubuntu still, navigate to the qmk_firmware folder again.
+
+To make the default planck build, run:
+			
+
+    make planck-rev4-default
+
+This will make a .hex file in the root directory
+
+##How to flash to the planck
+		
+Download and install Flip and JRE
+			http://www.atmel.com/tools/flip.aspx
+			https://java.com/en/download/
+
+Put the planck in boot mode: Hold the reset button on the bottom of the PCB, or press the RESET key (Raise+Lower+Q)
+
+Open FLIP and select ATMEGA32U4 as target device
+
+Select USB as communication medium
+
+open File → Load Hex File  then select the .hex file that was built earlier
+
+Make sure all boxes on the left are checked, and click "Run"
+
+Press "Start Application"
+
+Planck should be up and running now with the new firmware.
+
+
 # Quantum Mechanical Keyboard Firmware
 
 [![Build Status](https://travis-ci.org/qmk/qmk_firmware.svg?branch=master)](https://travis-ci.org/qmk/qmk_firmware)
