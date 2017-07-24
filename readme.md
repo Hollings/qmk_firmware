@@ -1,6 +1,6 @@
-#How to install this firmware on a Planck keyboard using Windows 10
+# How to install this firmware on a Planck keyboard using Windows 10
 
-##Enabling Windows Subsystem for Linux on windows 10 Creator update
+## Enabling Windows Subsystem for Linux on windows 10 Creator update
 
 Make sure you have the 64 bit windows 10 anniversary update.
 
