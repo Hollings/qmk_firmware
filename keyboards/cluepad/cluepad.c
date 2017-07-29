@@ -36,7 +36,8 @@ void backlight_set(uint8_t level)
     {
         case 0:
             // 33%
-            pwm_level = 0x54;
+            // pwm_level = 0x54;
+            pwm_level = 0x14;
             break;
         case 1:
             // 66%

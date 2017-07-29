@@ -1,6 +1,7 @@
 #ifndef CONFIG_USER_H
 #define CONFIG_USER_H
 #define BACKLIGHT_BREATHING
+#define BACKLIGHT_LEVELS 6
 
 #include "../../config.h"
 

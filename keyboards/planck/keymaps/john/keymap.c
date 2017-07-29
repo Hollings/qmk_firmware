@@ -17,7 +17,6 @@ static uint8_t second_counter = 0;
 static uint8_t old_backlight_level = -1;
 static bool led_on = true;
 extern keymap_config_t keymap_config;
-
 // Each layer gets a name for readability, which is then used in the keymap matrix below.
 // The underscores don't mean anything - you can have a layer called STUFF or any other name.
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
@@ -65,7 +64,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   {KC_ESC,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC},
   {KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,    KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT},
   {KC_LSPO, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,    KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT },
-  {KC_LCTL, KC_LGUI, KC_LALT,   _______  ,   LOWER,  KC_SPC,  KC_SPC,   RAISE,    KC_LCBR, KC_RCBR  ,   _______   , KC_RSPC}
+  {KC_LCTL, KC_LGUI, KC_LALT,   LOWER  ,   LOWER,  KC_SPC,  KC_SPC,   RAISE,    KC_LCBR, KC_RCBR  ,   KC_DLR   , KC_RSPC}
 },
 
 /* Colemak
@@ -136,7 +135,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [_RAISE] = {
   {KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL},
   {KC_DEL,  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS},
-  {_______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  KC_NUHS, KC_NUBS, KC_PGUP, KC_PGDN, _______},
+  {_______, KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,  M(4),    M(5),    KC_PGUP, KC_PGDN, _______},
   {_______, _______, _______, _______, _______, _______, _______, _______, KC_MNXT, KC_VOLD, KC_VOLU, KC_MPLY}
 },
 
@@ -172,7 +171,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  */
 [_ADJUST] = {
   {_______, RESET,   _______, _______, _______, _______, _______, _______, _______, _______, _______, M(0)},
-  {BL_INC, _______, _______, AU_ON,   AU_OFF,  _______, _______, QWERTY,  _______, _______,  _______,   M(1)},
+  {BL_INC, _______, _______, AU_ON,   AU_OFF,  _______, _______, QWERTY,  _______, _______,  _______, M(1)},
   {BL_DEC, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  _______, _______, _______, _______,  M(2)},
   {BL_TOGG, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, M(3)}
 }
@@ -201,31 +200,40 @@ void persistent_default_layer_set(uint16_t default_layer) {
 }
 const macro_t *action_get_macro(keyrecord_t *record, uint8_t id, uint8_t opt)
 {
+
     if (record->event.pressed) {
-        breathing_speed_set(2);
-        breathing_pulse();
+        backlight_toggle();
         switch(id) {
             case 0:
-
                 SEND_STRING("bradrgs170");
+                backlight_toggle();
                 return false;
             case 1:
-
                 SEND_STRING("cd /var/www/");
+                backlight_toggle();
                 return false;
             case 2:
-
                 SEND_STRING("vim /etc/nginx/sites-available/");
+                backlight_toggle();
+                return false;
+            case 3:
+                tap_random_base64();
                 return false;
 
-            // case 3:
-            //     cch = ;
-            //     SEND_STRING(cch);
-            //     return false;
+            case 4:
+                SEND_STRING("->");
+                backlight_toggle();
+                return false;
+            case 5:
+                SEND_STRING("->");
+                backlight_toggle();
+                return false;
             }
+
     }
     return MACRO_NONE;
 }
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 
   // turn on backlight after it turned off
@@ -235,7 +243,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   	{
   		backlight_toggle();
   	}
-  	
+
 
      #ifdef BACKLIGHT_ENABLE
          if (led_on == false || old_backlight_level == -1) {
@@ -249,7 +257,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
      second_counter = 0;
   }
 
-  
+
   switch (keycode) {
     case QWERTY:
       if (record->event.pressed) {
